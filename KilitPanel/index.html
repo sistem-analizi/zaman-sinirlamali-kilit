@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akıllı Erişim Kontrol Sistemi v8.6 | Elite Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #020617; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0ea5e9; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-panel { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-sidebar { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(20px); border-right: 1px solid rgba(56, 189, 248, 0.1); }
+        .text-gradient { background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .text-gradient-emerald { background: linear-gradient(135deg, #34d399 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hover-glow:hover { box-shadow: 0 0 25px rgba(56, 189, 248, 0.4); transform: translateY(-3px); transition: all 0.3s ease; }
+        .card-glow:hover { box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.5); }
+        .premium-input:focus { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.9); }
+        .user-code-card.active-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); border-color: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), inset 0 0 20px rgba(16, 185, 129, 0.05); }
+        .bg-grid { background-size: 40px 40px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px); }
+        
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { padding: 16px 24px; border-radius: 16px; color: white; font-weight: 600; font-size: 14px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; backdrop-filter: blur(10px); animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; pointer-events: auto; }
+        .toast.success { background: rgba(16, 185, 129, 0.9); border: 1px solid rgba(16, 185, 129, 0.5); }
+        .toast.error { background: rgba(225, 29, 72, 0.9); border: 1px solid rgba(225, 29, 72, 0.5); }
+        .toast.fadeOut { animation: toastOut 0.4s ease-in forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-30px); } }
+    </style>
+</head>
+<body class="text-slate-200 bg-[#020617] bg-grid min-h-screen">
+
+    <div id="toast-container"></div>
+
+    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#020617]">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+        
+        <div class="glass-panel w-full max-w-md p-10 rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] relative z-10 transform transition-all duration-500 hover:scale-[1.01]">
+            <div class="text-center mb-10">
+                <div class="inline-flex p-4 rounded-2xl bg-slate-900/80 text-sky-400 mb-6 border border-sky-500/30 shadow-[0_0_20px_rgba(56,189,248,0.2)]">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h2 class="text-5xl font-black text-gradient tracking-tighter pb-1">Sistem Girişi</h2>
+                <p class="text-slate-400 mt-3 text-sm tracking-wide uppercase font-semibold">Biyometrik & Kriptografik Erişim</p>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-sky-400 uppercase tracking-widest mb-2">E-Posta Adresi</label>
+                    <input type="email" id="login-email" onkeypress="if(event.key === 'Enter') authKontrol()" class="w-full px-5 py-4 rounded-2xl bg-slate-900/50 border border-slate-700/50 text-white placeholder-slate-600 premium-input transition-all outline-none" placeholder="admin@firma.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-sky-400 uppercase tracking-widest mb-2">Güvenlik Şifresi</label>
+                    <input type="password" id="login-pass" onkeypress="if(event.key === 'Enter') authKontrol()" class="w-full px-5 py-4 rounded-2xl bg-slate-900/50 border border-slate-700/50 text-white premium-input transition-all outline-none" placeholder="••••••••">
+                </div>
+                <button onclick="authKontrol()" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold py-4 rounded-2xl transition-all mt-8 text-lg shadow-[0_0_20px_rgba(56,189,248,0.3)] hover-glow">
+                    Giriş Yap ve Yetkilendir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-dashboard" class="hidden min-h-screen flex relative">
+        <div class="absolute top-0 left-1/2 w-full h-96 bg-sky-900/10 rounded-full blur-[150px] pointer-events-none -translate-x-1/2"></div>
+        
+        <aside class="w-72 glass-sidebar text-slate-400 flex flex-col fixed h-full z-20 shadow-2xl">
+            <div class="p-8">
+                <div class="font-black text-3xl tracking-tighter mb-10 flex items-center text-gradient pb-1">
+                    <svg class="w-8 h-8 mr-3 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    NEXUS OS
+                </div>
+                <div class="mb-10 bg-slate-900/50 p-5 rounded-2xl border border-sky-500/20 shadow-inner">
+                    <div id="admin-name" class="text-white font-bold text-xl">Yönetici</div>
+                    <div class="text-[10px] text-sky-400 mt-1 uppercase tracking-[0.2em] font-black flex items-center">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_#10b981] animate-pulse"></span> Sistem Yöneticisi
+                    </div>
+                </div>
+                <nav class="space-y-3">
+                    <a href="#" onclick="showTab('admin-talepler', this, 'admin')" class="nav-item flex items-center px-5 py-4 text-sm font-bold rounded-2xl active text-white bg-sky-600/20 border border-sky-500/30 shadow-[0_0_15px_rgba(56,189,248,0.1)] transition-all">Erişim Talepleri</a>
+                    <a href="#" onclick="showTab('admin-personel', this, 'admin')" class="nav-item flex items-center px-5 py-4 text-sm font-semibold rounded-2xl hover:bg-slate-800/50 hover:text-white transition-all">Personel Yönetimi</a>
+                    <a href="#" onclick="showTab('admin-aktif-sifreler', this, 'admin')" class="nav-item flex items-center px-5 py-4 text-sm font-semibold rounded-2xl hover:bg-slate-800/50 hover:text-white transition-all">Aktif Şifreler</a>
+                    <a href="#" onclick="showTab('admin-sistem-kontrol', this, 'admin')" class="nav-item flex items-center px-5 py-4 text-sm font-semibold rounded-2xl hover:bg-slate-800/50 hover:text-white transition-all">Sistem Kontrolü (Bakım)</a>
+                    <a href="#" onclick="showTab('admin-loglar', this, 'admin')" class="nav-item flex items-center px-5 py-4 text-sm font-semibold rounded-2xl hover:bg-slate-800/50 hover:text-white transition-all">Sistem Logları</a>
+                </nav>
+            </div>
+            <div class="mt-auto p-8 border-t border-slate-800/50">
+                <button onclick="cikisYap()" class="w-full text-left text-sm text-red-400 hover:text-red-300 font-bold flex items-center p-3 hover:bg-red-950/30 rounded-xl transition-all">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>Oturumu Kapat
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 ml-72 p-12 relative z-10">
+            <div class="global-bakim-uyarisi hidden mb-8 bg-rose-500/10 border border-rose-500/30 p-4 rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(244,63,94,0.1)]">
+                <svg class="w-6 h-6 text-rose-400 mr-3 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <p class="global-bakim-metni text-rose-400 font-bold text-sm tracking-wide"></p>
+            </div>
+
+            <section id="admin-talepler" class="tab-content active admin-tab space-y-12">
+                <header class="flex justify-between items-center glass-panel p-8 rounded-3xl shadow-xl">
+                    <h1 class="text-5xl font-black text-white tracking-tighter">Kontrol <span class="text-gradient">Merkezi</span></h1>
+                    <button onclick="tumTalepleriSilKontrol()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 px-6 py-3 rounded-2xl text-xs font-bold transition-all flex items-center border border-rose-500/30 hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:-translate-y-1">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Tüm Talepleri Sil
+                    </button>
+                </header>
+                
+                <div class="grid grid-cols-3 gap-8">
+                    <div class="glass-panel p-8 rounded-[2rem] border-l-4 border-l-sky-400 transition-all card-glow relative overflow-hidden">
+                        <div class="absolute -right-6 -top-6 text-sky-500/10"><svg class="w-32 h-32" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z"/></svg></div>
+                        <p class="text-[10px] font-black text-sky-400 uppercase tracking-[0.2em] mb-2 relative z-10">Aktif Şifreler</p>
+                        <h3 id="stat-aktif" class="text-6xl font-black text-white tracking-tighter relative z-10">0</h3>
+                    </div>
+                    <div class="glass-panel p-8 rounded-[2rem] border-l-4 border-l-emerald-400 transition-all card-glow relative overflow-hidden">
+                        <div class="absolute -right-6 -top-6 text-emerald-500/10"><svg class="w-32 h-32" fill="currentColor" viewBox="0 0 20 20"><path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg></div>
+                        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-2 relative z-10">Bugün Başarılı</p>
+                        <h3 id="stat-bugun" class="text-6xl font-black text-white tracking-tighter relative z-10">0</h3>
+                    </div>
+                    <div class="glass-panel p-8 rounded-[2rem] border-l-4 border-l-rose-500 transition-all card-glow relative overflow-hidden">
+                        <div class="absolute -right-6 -top-6 text-rose-500/10"><svg class="w-32 h-32" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/></svg></div>
+                        <p class="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] mb-2 relative z-10">Bugün İhlal/Hata</p>
+                        <h3 id="stat-hata" class="text-6xl font-black text-white tracking-tighter relative z-10">0</h3>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-[2rem] shadow-2xl overflow-hidden border border-slate-700/50">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-900/80 border-b border-slate-700/50 text-[10px] font-black text-sky-400 uppercase tracking-[0.15em]">
+                            <tr><th class="px-8 py-6">Personel Kimliği</th><th class="px-8 py-6">Talep Detayı</th><th class="px-8 py-6 text-center">Sistem Durumu</th><th class="px-8 py-6 text-right">Aksiyon</th></tr>
+                        </thead>
+                        <tbody id="admin-ticket-body" class="divide-y divide-slate-800/50 text-sm text-slate-300 bg-slate-900/30"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="admin-personel" class="tab-content admin-tab space-y-10">
+                <header class="flex justify-between items-center glass-panel p-8 rounded-3xl shadow-xl">
+                    <div>
+                        <h1 class="text-5xl font-black text-white tracking-tighter">Personel <span class="text-gradient">Ağı</span></h1>
+                    </div>
+                    <button onclick="document.getElementById('add-user-modal').classList.remove('hidden')" class="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white px-6 py-4 rounded-2xl text-sm font-bold shadow-[0_0_20px_rgba(56,189,248,0.3)] hover-glow flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Yeni Kayıt Ekle
+                    </button>
+                </header>
+                <div class="glass-panel rounded-[2rem] shadow-2xl overflow-hidden border border-slate-700/50">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-900/80 border-b border-slate-700/50 text-[10px] font-black text-sky-400 uppercase tracking-[0.15em]">
+                            <tr><th class="px-8 py-6">Sicil No (ID)</th><th class="px-8 py-6">Ad Soyad</th><th class="px-8 py-6">E-Posta</th><th class="px-8 py-6 text-right">Hızlı İşlem</th></tr>
+                        </thead>
+                        <tbody id="admin-personel-body" class="divide-y divide-slate-800/50 text-sm text-slate-300 bg-slate-900/30"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="admin-aktif-sifreler" class="tab-content admin-tab space-y-10">
+                <header class="flex justify-between items-center glass-panel p-8 rounded-3xl shadow-xl mb-8">
+                    <h1 class="text-5xl font-black text-white tracking-tighter">Aktif <span class="text-gradient">Anahtarlar</span></h1>
+                    <button onclick="eskiSifreleriTemizleKontrol()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 px-6 py-3 rounded-2xl text-xs font-bold transition-all flex items-center border border-rose-500/30 hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:-translate-y-1">
+                        Eski Şifreleri Süpür
+                    </button>
+                </header>
+                <div class="glass-panel rounded-[2rem] shadow-2xl overflow-hidden border border-slate-700/50">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-900/80 border-b border-slate-700/50 text-[10px] font-black text-sky-400 uppercase tracking-[0.15em]">
+                            <tr><th class="px-8 py-6">Personel</th><th class="px-8 py-6 text-center">PIN Anahtarı</th><th class="px-8 py-6">Başlangıç</th><th class="px-8 py-6">Bitiş</th><th class="px-8 py-6 text-right">Durum / Aksiyon</th></tr>
+                        </thead>
+                        <tbody id="admin-aktif-sifreler-body" class="divide-y divide-slate-800/50 text-sm text-slate-300 bg-slate-900/30"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="admin-sistem-kontrol" class="tab-content admin-tab space-y-8">
+                <header class="glass-panel p-8 rounded-3xl shadow-xl mb-8">
+                    <h1 class="text-5xl font-black text-white tracking-tighter">Sistem <span class="text-gradient">Bakım & Kontrol</span></h1>
+                    <p class="text-slate-400 mt-2 text-sm font-medium">Fiziksel kilit sistemini geçici veya zamanlı olarak kullanıma kapatın.</p>
+                </header>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="glass-panel p-10 rounded-[2.5rem] border border-slate-700/50 relative overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-3xl font-black text-white mb-3">Anında Bakım Modu</h2>
+                            <p class="text-sm text-slate-400 mb-8 leading-relaxed">Sistemi anında kullanıma kapatır. Tesis kilitlenir, tuş takımı ve butonlar devre dışı bırakılır.</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                             <label class="block text-[10px] font-black text-sky-400 uppercase tracking-widest mb-2">Ekranda Görünecek Mesaj (Zorunlu)</label>
+                             <input type="text" id="manuel-bakim-mesaji" maxlength="16" placeholder="Örn: SISTEM BAKIMDA" value="SISTEM BAKIMDA" class="w-full p-4 bg-slate-900/80 border border-slate-700 rounded-xl text-xs font-bold outline-none text-white focus:border-sky-500 transition-colors uppercase tracking-widest">
+                        </div>
+
+                        <div class="flex items-center justify-between bg-slate-900/50 p-6 rounded-2xl border border-slate-800/50">
+                            <span id="manuel-durum-yazi" class="text-sm font-black uppercase tracking-widest text-emerald-400">SİSTEM AKTİF</span>
+                            <button id="btn-manuel-bakim" onclick="toggleManuelBakim()" class="px-8 py-3 rounded-xl font-bold text-white transition-all hover:-translate-y-1">YÜKLENİYOR...</button>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-10 rounded-[2.5rem] border border-slate-700/50 relative overflow-hidden">
+                        <div class="flex items-start justify-between mb-6">
+                            <div>
+                                <h2 class="text-3xl font-black text-white mb-3">Zamanlanmış Bakım</h2>
+                                <p class="text-sm text-slate-400 leading-relaxed">Tarih seçtiğiniz an otomatik olarak sisteme işlenir.</p>
+                            </div>
+                            <button id="btn-zamanli-bakim-toggle" onclick="toggleZamanliBakim()" class="px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest text-white transition-all shadow-lg hover:-translate-y-1">YÜKLENİYOR</button>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-[10px] font-black text-sky-400 uppercase tracking-widest mb-2">Ekranda Görünecek Mesaj (Zorunlu)</label>
+                            <input type="text" id="zamanli-bakim-mesaji" maxlength="16" placeholder="Örn: RUTIN BAKIM" value="RUTIN BAKIM" onchange="zamanliBakimOtomatikKaydet()" class="w-full p-4 bg-slate-900/80 border border-slate-700 rounded-xl text-xs font-bold outline-none text-white focus:border-sky-500 transition-colors uppercase tracking-widest">
+                        </div>
+
+                        <div class="relative bg-slate-900/50 p-6 rounded-2xl border border-slate-800/50">
+                            <div id="otomatik-kayit-uyari" class="absolute -top-3 right-4 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)] opacity-0 transition-opacity duration-300 pointer-events-none">SİSTEME İŞLENDİ ✓</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-black text-sky-400 uppercase tracking-widest mb-2">Başlangıç</label>
+                                    <input type="datetime-local" id="bakim-baslangic" onchange="zamanliBakimOtomatikKaydet()" class="w-full p-4 bg-slate-900/80 border border-slate-700 rounded-xl text-xs font-semibold outline-none text-slate-300 focus:border-sky-500 cursor-pointer transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-sky-400 uppercase tracking-widest mb-2">Bitiş</label>
+                                    <input type="datetime-local" id="bakim-bitis" onchange="zamanliBakimOtomatikKaydet()" class="w-full p-4 bg-slate-900/80 border border-slate-700 rounded-xl text-xs font-semibold outline-none text-slate-300 focus:border-sky-500 cursor-pointer transition-colors">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="aktif-zamanli-bakim-bilgisi" class="hidden mt-4 bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl">
+                            <p class="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-1">Şu Anki Aktif Planlama</p>
+                            <p id="zamanli-bakim-tarihleri" class="text-xs font-bold text-slate-200"></p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section id="admin-loglar" class="tab-content admin-tab space-y-8">
+                <header class="flex justify-between items-center glass-panel p-8 rounded-3xl shadow-xl">
+                    <h1 class="text-5xl font-black text-white tracking-tighter">Sistem <span class="text-gradient">Dökümü</span></h1>
+                    <div class="relative">
+                        <svg class="w-5 h-5 absolute left-4 top-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <input type="text" id="admin-log-ara" onkeyup="loglariFiltrele('admin')" placeholder="İsim, ID veya PIN ara..." class="w-80 pl-12 pr-5 py-4 bg-slate-900/80 border border-sky-500/30 rounded-2xl focus:border-sky-400 focus:shadow-[0_0_20px_rgba(56,189,248,0.2)] transition-all text-white outline-none placeholder-slate-500">
+                    </div>
+                </header>
+                <div id="log-list" class="space-y-4"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="user-dashboard" class="hidden min-h-screen flex relative">
+        <div class="absolute top-0 left-1/2 w-full h-96 bg-emerald-900/10 rounded-full blur-[150px] pointer-events-none -translate-x-1/2"></div>
+        <aside class="w-72 glass-sidebar text-emerald-200 flex flex-col fixed h-full z-20 shadow-2xl border-r border-emerald-900/30">
+            <div class="p-8">
+                <div class="font-black text-3xl tracking-tighter mb-10 flex items-center text-gradient-emerald pb-1">
+                    PERSONEL AĞI
+                </div>
+                <div class="mb-10 bg-slate-900/50 p-5 rounded-2xl border border-emerald-500/20 shadow-inner">
+                    <div id="user-name" class="text-white font-bold text-xl">Kullanıcı</div>
+                    <div id="user-id-display" class="text-[10px] text-emerald-400 mt-1 font-mono uppercase tracking-[0.1em] font-black">ID: 000000</div>
+                </div>
+                <nav class="space-y-3">
+                    <a href="#" onclick="showTab('user-yeni-talep', this, 'user')" class="nav-item flex items-center px-5 py-4 text-sm font-bold rounded-2xl active text-white bg-emerald-600/20 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)] transition-all">Yeni Erişim Talebi</a>
+                    <a href="#" onclick="showTab('user-aktif-sifreler', this, 'user')" class="nav-item flex items-center px-5 py-4 text-sm font-semibold rounded-2xl hover:bg-slate-800/50 hover:text-white transition-all">Aktif Şifrelerim</a>
+                    <a href="#" onclick="showTab('user-gecmis', this, 'user')" class="nav-item flex items-center px-5 py-4 text-sm font-semibold rounded-2xl hover:bg-slate-800/50 hover:text-white transition-all">Talep Geçmişim</a>
+                    <a href="#" onclick="showTab('user-loglar', this, 'user')" class="nav-item flex items-center px-5 py-4 text-sm font-semibold rounded-2xl hover:bg-slate-800/50 hover:text-white transition-all">Giriş Kayıtlarım</a>
+                </nav>
+            </div>
+            <div class="mt-auto p-8 border-t border-slate-800/50">
+                <button onclick="cikisYap()" class="w-full text-left text-sm text-red-400 hover:text-red-300 font-bold flex items-center p-3 hover:bg-red-950/30 rounded-xl transition-all">Güvenli Çıkış</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 ml-72 p-12 relative z-10">
+            <div class="global-bakim-uyarisi hidden mb-8 bg-rose-500/10 border border-rose-500/30 p-4 rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(244,63,94,0.1)]">
+                <svg class="w-6 h-6 text-rose-400 mr-3 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <p class="global-bakim-metni text-rose-400 font-bold text-sm tracking-wide"></p>
+            </div>
+
+            <section id="user-yeni-talep" class="tab-content active user-tab space-y-10">
+                <header class="glass-panel p-8 rounded-3xl shadow-xl mb-8">
+                    <h1 class="text-5xl font-black text-white tracking-tighter">Erişim <span class="text-gradient-emerald">Talebi</span></h1>
+                    <p class="text-slate-400 mt-2 text-sm font-medium">Yönetici onayından sonra giriş şifreniz kriptografik olarak oluşturulacaktır.</p>
+                </header>
+                <div class="glass-panel max-w-2xl p-10 rounded-[2.5rem] shadow-2xl border border-slate-700/50">
+                    <label class="block text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">Giriş Nedeni / Açıklama</label>
+                    <textarea id="user-talep-mesaji" rows="3" class="w-full p-5 bg-slate-900/60 border border-slate-700 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-white outline-none mb-6 placeholder-slate-600 resize-none"></textarea>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8 bg-slate-900/30 p-6 rounded-2xl border border-slate-800">
+                        <div>
+                            <label class="block text-[10px] font-black text-emerald-500 uppercase tracking-[0.1em] mb-2">Talep Edilen Başlangıç</label>
+                            <input type="datetime-local" id="user-talep-baslangic" class="w-full p-4 bg-slate-900/80 border border-slate-700 rounded-xl text-xs font-semibold outline-none text-slate-300 focus:border-emerald-500 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-emerald-500 uppercase tracking-[0.1em] mb-2">Talep Edilen Bitiş</label>
+                            <input type="datetime-local" id="user-talep-bitis" class="w-full p-4 bg-slate-900/80 border border-slate-700 rounded-xl text-xs font-semibold outline-none text-slate-300 focus:border-emerald-500 transition-colors">
+                        </div>
+                    </div>
+
+                    <button onclick="kullaniciTalepGonder()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all hover:-translate-y-1">Talebi Sisteme İlet</button>
+                </div>
+            </section>
+
+            <section id="user-aktif-sifreler" class="tab-content user-tab space-y-10">
+                <header class="glass-panel p-8 rounded-3xl shadow-xl mb-8">
+                    <h1 class="text-5xl font-black text-white tracking-tighter">Güncel <span class="text-gradient-emerald">Şifrelerim</span></h1>
+                </header>
+                <div id="user-aktif-sifreler-list" class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8"></div>
+            </section>
+
+            <section id="user-gecmis" class="tab-content user-tab space-y-10">
+                <header class="glass-panel p-8 rounded-3xl shadow-xl mb-8">
+                    <h1 class="text-5xl font-black text-white tracking-tighter">Talep <span class="text-gradient-emerald">Geçmişim</span></h1>
+                </header>
+                <div class="glass-panel rounded-[2rem] shadow-2xl overflow-hidden border border-slate-700/50">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-900/80 border-b border-slate-700/50 text-[10px] font-black text-emerald-400 uppercase tracking-[0.15em]">
+                            <tr><th class="px-8 py-6">Oluşturulma Tarihi</th><th class="px-8 py-6">İletilen Mesaj</th><th class="px-8 py-6 text-center">Sistem Yanıtı / PIN</th></tr>
+                        </thead>
+                        <tbody id="user-ticket-body" class="divide-y divide-slate-800/50 text-sm text-slate-300 bg-slate-900/30"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="user-loglar" class="tab-content user-tab space-y-8">
+                <header class="flex justify-between items-center glass-panel p-8 rounded-3xl shadow-xl mb-8">
+                    <h1 class="text-5xl font-black text-white tracking-tighter">Giriş <span class="text-gradient-emerald">Kayıtlarım</span></h1>
+                    <input type="text" id="user-log-ara" onkeyup="loglariFiltrele('user')" placeholder="Kayıtlarda ara..." class="w-72 p-4 bg-slate-900/80 border border-emerald-500/30 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all text-white outline-none placeholder-slate-500">
+                </header>
+                <div id="user-log-list" class="space-y-4"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="reply-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+        <div class="glass-panel w-full max-w-lg rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden border border-sky-500/20 transform transition-all duration-300">
+            <div class="bg-slate-900/50 p-8 border-b border-slate-700/50 flex justify-between items-center">
+                <h3 id="modal-title" class="font-black text-2xl text-white tracking-tight text-gradient">Talebi Yanıtla</h3>
+                <button onclick="modalKapat('reply-modal')" class="text-slate-400 hover:text-white text-3xl transition-colors">&times;</button>
+            </div>
+            <div class="p-8 space-y-6">
+                <div id="cevap-notu-alani">
+                    <label class="block text-[10px] font-black text-sky-400 uppercase tracking-[0.2em] mb-2">Sistem Notu (Opsiyonel)</label>
+                    <textarea id="admin-cevap-metni" rows="2" class="w-full p-4 bg-slate-900/60 border border-slate-700 rounded-2xl focus:border-sky-500 transition-all text-white outline-none resize-none"></textarea>
+                </div>
+                <div class="bg-sky-950/20 p-6 rounded-[2rem] border border-sky-900/50 shadow-inner">
+                    <label class="block text-[10px] font-black text-sky-400 uppercase tracking-[0.2em] mb-3 text-center">Atanacak Güvenlik Kodu</label>
+                    <input type="text" id="admin-manuel-pin" maxlength="4" class="w-full p-4 bg-slate-900/80 border border-sky-800 rounded-2xl outline-none font-mono text-center text-5xl font-black tracking-[0.3em] text-sky-300 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] focus:border-sky-400 transition-colors">
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] mb-2">Aktifleşme Zamanı</label>
+                        <input type="datetime-local" id="admin-zaman-baslangic" class="w-full p-4 bg-slate-900/60 border border-slate-700 rounded-xl text-xs font-semibold outline-none text-slate-300 focus:border-sky-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] mb-2">İptal Zamanı</label>
+                        <input type="datetime-local" id="admin-zaman-bitis" class="w-full p-4 bg-slate-900/60 border border-slate-700 rounded-xl text-xs font-semibold outline-none text-slate-300 focus:border-sky-500 transition-colors">
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-900/50 p-6 border-t border-slate-700/50 flex justify-end space-x-4">
+                <button id="btn-reddet" onclick="talebiCevapla('red')" class="px-6 py-3 rounded-xl font-bold text-rose-400 bg-rose-950/30 border border-rose-900/50 hover:bg-rose-900/50 transition-all">Reddet</button>
+                <button id="btn-onayla" onclick="talebiCevapla('onay')" class="px-8 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 shadow-[0_0_20px_rgba(56,189,248,0.2)] transition-all hover:-translate-y-1">Yetkilendir</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-user-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+        <div class="glass-panel w-full max-w-md rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden border border-sky-500/20">
+            <div class="bg-slate-900/50 p-8 border-b border-slate-700/50 flex justify-between items-center">
+                <h3 class="font-black text-2xl text-white tracking-tight text-gradient">Yeni Personel Kaydı</h3>
+                <button onclick="modalKapat('add-user-modal')" class="text-slate-400 hover:text-white text-3xl transition-colors">&times;</button>
+            </div>
+            <div class="p-8 space-y-5">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-sky-400 uppercase tracking-widest mb-2">Ad</label>
+                        <input type="text" id="new-user-name" class="w-full p-4 bg-slate-900/60 border border-slate-700 rounded-xl text-white outline-none focus:border-sky-500 transition-colors" placeholder="Veli">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-sky-400 uppercase tracking-widest mb-2">Soyad</label>
+                        <input type="text" id="new-user-surname" class="w-full p-4 bg-slate-900/60 border border-slate-700 rounded-xl text-white outline-none focus:border-sky-500 transition-colors" placeholder="Çalışkan">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-[10px] font-black text-sky-400 uppercase tracking-widest mb-2">Kurum Sicil No (ID)</label>
+                    <input type="text" id="new-user-id" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-4 bg-slate-900/60 border border-slate-700 rounded-xl text-white outline-none focus:border-sky-500 transition-colors font-mono" placeholder="102940">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-sky-400 uppercase tracking-widest mb-2">Sistem E-Postası</label>
+                    <input type="email" id="new-user-email" class="w-full p-4 bg-slate-900/60 border border-slate-700 rounded-xl text-white outline-none focus:border-sky-500 transition-colors" placeholder="personel@firma.com">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-sky-400 uppercase tracking-widest mb-2">Geçici Erişim Şifresi</label>
+                    <input type="password" id="new-user-pass" class="w-full p-4 bg-slate-900/60 border border-slate-700 rounded-xl text-white outline-none focus:border-sky-500 transition-colors" placeholder="••••••••">
+                </div>
+            </div>
+            <div class="bg-slate-900/50 p-6 border-t border-slate-700/50">
+                <button onclick="personelEkle()" class="w-full px-6 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 shadow-[0_0_20px_rgba(56,189,248,0.2)] transition-all hover:-translate-y-1">Sisteme Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-confirm-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+        <div class="glass-panel w-full max-w-md rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden border border-rose-500/20 transform transition-all duration-300">
+            <div class="p-8 text-center">
+                <div class="w-20 h-20 mx-auto bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/30 mb-6 shadow-[0_0_20px_rgba(244,63,94,0.2)]">
+                    <svg class="w-10 h-10 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </div>
+                <h3 id="delete-modal-title" class="font-black text-2xl text-white tracking-tight mb-2">Kaydı Sil</h3>
+                <p id="delete-modal-desc" class="text-slate-400 text-sm mb-8">Bu veriyi sistemden kalıcı olarak silmek istediğinize emin misiniz?</p>
+                <div class="flex space-x-4">
+                    <button onclick="modalKapat('delete-confirm-modal')" class="flex-1 px-6 py-4 rounded-xl font-bold text-slate-300 bg-slate-800 hover:bg-slate-700 transition-all border border-slate-700 hover:border-slate-600">İptal Et</button>
+                    <button onclick="kaydiSilOnayla()" class="flex-1 px-6 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 shadow-[0_0_20px_rgba(225,29,72,0.3)] transition-all hover:-translate-y-1 border border-rose-500/50">Evet, Onayla</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="app.js"></script>
+    
+    <script>
+        window.alert = function(message, type = "error") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            
+            if(message.toLowerCase().includes("başarı") || message.toLowerCase().includes("iletildi") || message.toLowerCase().includes("güncellendi") || message.toLowerCase().includes("eklendi") || message.toLowerCase().includes("dahil edildi") || message.toLowerCase().includes("silindi") || message.toLowerCase().includes("iptal edildi")) {
+                type = "success";
+            }
+
+            toast.className = `toast ${type}`;
+            
+            const icon = type === "success" 
+                ? `<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+                : `<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add("fadeOut");
+                setTimeout(() => { toast.remove(); }, 400); 
+            }, 3000);
+        };
+    </script>
+</body>
+</html>
+
+
+
+

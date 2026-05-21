@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Nexus OS",
+    "slug": "nexus-os",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/kilit.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/images/kilit.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#020617"
+      
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/kilit.png",
+        "backgroundColor": "#020617"
+      },
+      "package": "com.comu.nexusos"
+    },
+    "web": {
+      "favicon": "./assets/images/kilit.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "473325f4-058e-4d30-83f5-77eb450c2cb8"
+      }
+    },
+    "plugins": [
+      "@react-native-community/datetimepicker"
+    ]
+  },
+  "notification": {
+  "icon": "./assets/kilit-icon.png",
+  "color": "#38bdf8"
+}
+}
+
