@@ -1,0 +1,16 @@
+name: Deploy
+
+  on:
+    push:
+      branches: [main]
+    workflow_dispatch:
+
+  jobs:
+    deploy:
+      uses: sistem-analizi/ci/.github/workflows/deploy.yml@v1
+      with:
+        build_type: static
+        year: '2026'
+        clean_slate: true
+
+      secrets: inherit
