@@ -27,9 +27,9 @@ Notifications.setNotificationHandler({
 // 1. FIREBASE BAĞLANTISI
 // ==========================================
 const firebaseConfig = {
-  apiKey: "AIzaSyAFRUFeg4cwR-ePqCDviSyNLavzyei28t0",
+  apiKey: "AIzaSyD4c2whFEFrVKEe3YRwevxrp0SXNzzcNO4",
   authDomain: "zamanlamali-kilit.firebaseapp.com",
-  databaseURL: "https://zamanlamali-kilit-default-rtdb.europe-west1.firebasedatabase.app",
+  databaseURL: "https://zaman-sinirlamali-kilit-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "zamanlamali-kilit",
   storageBucket: "zamanlamali-kilit.firebasestorage.app"
 };
