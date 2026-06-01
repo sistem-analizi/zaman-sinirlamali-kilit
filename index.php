@@ -12,7 +12,7 @@ $app = AppFactory::create();
 
 $factory = (new Factory)
     ->withServiceAccount(__DIR__ . '/' . $_ENV['FIREBASE_CREDENTIALS'])
-    ->withDatabaseUri('https://zamanlamali-kilit-default-rtdb.europe-west1.firebasedatabase.app');
+    ->withDatabaseUri('https://zaman-sinirlamali-kilit-default-rtdb.europe-west1.firebasedatabase.app');
 $database = $factory->createDatabase();
 
 $app->get('/api/sistem-durumu', function ($request, $response, $args) use ($database) {
